@@ -11,14 +11,14 @@
         }
 
         // use jQuery if it's available
-        var usingJQuery = typeof window.jQuery !== 'undefined',
+        var USING_JQUERY = typeof window.jQuery !== 'undefined',
 
-            query = usingJQuery ? window.jQuery.find : window.document.querySelectorAll,
+            QUERY = USING_JQUERY ? window.jQuery.find : window.document.querySelectorAll,
 
             // use anonymous function to determine how to test the style
-            isHidden = ( function ()
+            IS_HIDDEN = ( function ()
                 {
-                    if ( usingJQuery )
+                    if ( USING_JQUERY )
                     {
                         // using jquery, test with .filter()
                         return function ( elem )
@@ -58,11 +58,11 @@
             // check this trigger
             check: function ()
             {
-                var elems = query( this.selector )
+                var elems = QUERY( this.selector )
 
                 for ( var i = 0, l = elems.length; i < l; ++i )
                 {
-                    if ( isHidden( elems[ i ] ) )
+                    if ( IS_HIDDEN( elems[ i ] ) )
                     {
                         continue
                     }
@@ -169,11 +169,11 @@
                 {
                     var c = this[ i ],
 
-                        elems = query( c.selector )
+                        elems = QUERY( c.selector )
 
                     for ( var i2 = 0, l2 = elems.length; i2 < l2; ++i2 )
                     {
-                        if ( isHidden( elems[ i2 ] ) )
+                        if ( IS_HIDDEN( elems[ i2 ] ) )
                         {
                             continue
                         }
