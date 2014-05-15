@@ -10,20 +10,22 @@
             return
         }
 
-        // use jQuery if it's available
-        var USING_JQUERY = typeof window.jQuery !== 'undefined',
+        // use jQuery (or a clone) if it's available
+        // look for window.$ since that is the universal jQuery syntax
+        // could interfere with other libraries using window.$
+        var USING_JQUERY = typeof window.$ !== 'undefined',
 
-            QUERY = USING_JQUERY ? window.jQuery.find : window.document.querySelectorAll,
+            QUERY = USING_JQUERY ? window.$ : window.document.querySelectorAll,
 
             // use anonymous function to determine how to test the style
             IS_HIDDEN = ( function ()
                 {
                     if ( USING_JQUERY )
                     {
-                        // using jquery, test with .filter()
+                        // using jQuery, test with .filter()
                         return function ( elem )
                         {
-                            return $( elem ).filter( ':visible' ).length === 0
+                            return QUERY( elem ).filter( ':visible' ).length === 0
                         }
                     }
                     else if ( window.getComputedStyle )
@@ -36,7 +38,9 @@
                     }
                     else
                     {
-                        // no jQuery and window.getComputedStyle is not available,
+                        // no jQuery and window.getComputedStyle is not available
+                        console.log( 'scout: unable to find compatible library (such as jQuery) or window.getComputedStyle, could cause issues depending on usage' )
+                        
                         // assume the element is visible
                         return function ()
                         {
