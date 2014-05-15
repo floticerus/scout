@@ -102,6 +102,11 @@
                 return this
             },
 
+            cached: function ( selector )
+            {
+                return this.cache.hasOwnProperty( selector ) && this[ this.cache[ selector ] ]
+            },
+
             on: function ( selector, fn )
             {
                 var trigger = new Trigger( selector, fn ),
@@ -138,7 +143,7 @@
 
             off: function ( selector )
             {
-                if ( this.cache.hasOwnProperty( selector ) && this[ this.cache[ selector ] ] )
+                if ( this.cached( selector ) )
                 {
                     // hopefully this works without issues
                     Array.prototype.splice.apply( this, [ this.cache[ selector ], 1 ] )
@@ -153,7 +158,7 @@
             {
                 var trigger = false
 
-                if ( this.cache.hasOwnProperty( selector ) && this[ this.cache[ selector ] ] )
+                if ( this.cached( selector ) )
                 {
                     trigger = this[ this.cache[ selector ] ]
                 }
