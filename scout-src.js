@@ -106,13 +106,6 @@
                 this.data[ selector ] = index
             },
 
-            remove: function ( selector )
-            {
-                this.data[ selector ] = undefined
-
-                delete this.data[ selector ]
-            },
-
             has: function ( selector )
             {
                 return typeof selector !== 'undefined' && this.data.hasOwnProperty( selector )
@@ -183,7 +176,7 @@
                     // hopefully this works without issues
                     Array.prototype.splice.apply( this, [ cached, 1 ] )
 
-                    this.cache.remove( selector )
+                    this.cache.update()
                 }
 
                 return this
