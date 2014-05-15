@@ -18,7 +18,7 @@
 
             QUERY = USING_JQUERY ? window.$ : window.document.querySelectorAll,
 
-            // use anonymous function to determine how to test the style
+            // use anonymous function to determine how to test element styles
             IS_HIDDEN = ( function ()
                 {
                     // check for jquery and filter method
@@ -27,7 +27,7 @@
                         // using jQuery, test with .filter()
                         return function ( elem )
                         {
-                            return QUERY( elem ).filter( ':visible' ).length === 0
+                            return QUERY( elem ).filter( ':hidden' ).length !== 0
                         }
                     }
                     else if ( window.getComputedStyle )
@@ -44,6 +44,7 @@
                         console.log( 'scout: unable to find compatible library (such as jQuery) or window.getComputedStyle, could cause issues depending on usage' )
                         
                         // assume the element is visible
+                        // definitely unwanted but i'm not aware of a simple workaround
                         return function ()
                         {
                             return false
