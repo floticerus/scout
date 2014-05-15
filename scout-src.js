@@ -77,6 +77,53 @@
         }
 
         /** @constructor */
+        function ScoutCache( scoutObject )
+        {
+            this.creator = scoutObject
+
+            this.data = {}
+        }
+
+        ScoutCache.prototype = {
+            update: function ()
+            {
+                // reset the cache
+                this.data = {}
+
+                // build a new cache
+                for ( var i = 0, l = this.creator.length; i < l; ++i )
+                {
+                    this.data[ this.creator[ i ].selector ] = i
+                }
+
+                return this
+            },
+
+            add: function ( selector, index )
+            {
+                this.data[ selector ] = index
+            },
+
+            remove: function ( selector )
+            {
+                this.data[ selector ] = undefined
+
+                delete this.data[ selector ]
+            },
+
+            has: function ( selector )
+            {
+                return typeof selector !== 'undefined' && this.data.hasOwnProperty( selector )
+            },
+
+            // returns index or -1
+            get: function ( selector )
+            {
+                return this.has( selector ) ? this.data[ selector ] : -1
+            }
+        }
+
+        /** @constructor */
         function Scout()
         {
             // build an array-like object for fast iterations
@@ -84,41 +131,25 @@
             this.length = 0
 
             // build a cache for searching without loops
-            this.cache = {}
+            this.cache = new ScoutCache( this )
         }
 
         Scout.prototype = {
-            updateCache: function ()
-            {
-                // reset the cache
-                this.cache = {}
-
-                // build a new cache
-                for ( var i = 0, l = this.length; i < l; ++i )
-                {
-                    this.cache[ this[ i ].selector ] = i
-                }
-
-                return this
-            },
-
-            cached: function ( selector )
-            {
-                return this.cache.hasOwnProperty( selector ) && this[ this.cache[ selector ] ]
-            },
-
             on: function ( selector, fn )
             {
                 var trigger = new Trigger( selector, fn ),
+                    
+                    // check for existing index
+                    c = this.cache.get( selector ),
 
-                    // if selector is cached, grab the existing index
-                    i = this.cache[ selector ] ? this.cache[ selector ] : this.length++
+                    // if index exists, use it, otherwise generate a new one
+                    i = c > -1 ? c : this.length++
 
                 // save the trigger
                 this[ i ] = trigger
 
                 // add index to cache - no need for a full rebuild
-                this.cache[ selector ] = i
+                this.cache.add( selector, i )
 
                 // run an initial check on this trigger - should be optional
                 trigger.check()
@@ -143,12 +174,14 @@
 
             off: function ( selector )
             {
-                if ( this.cached( selector ) )
+                var cached = this.cache.get( selector )
+
+                if ( cached > -1 )
                 {
                     // hopefully this works without issues
-                    Array.prototype.splice.apply( this, [ this.cache[ selector ], 1 ] )
+                    Array.prototype.splice.apply( this, [ cached, 1 ] )
 
-                    this.updateCache()
+                    this.cache.remove( selector )
                 }
 
                 return this
@@ -156,11 +189,13 @@
 
             get: function ( selector, fn )
             {
-                var trigger = false
+                var trigger = false,
 
-                if ( this.cached( selector ) )
+                    cached = this.cache.get( selector )
+
+                if ( cached > -1 )
                 {
-                    trigger = this[ this.cache[ selector ] ]
+                    trigger = this[ cached ]
                 }
 
                 if ( fn )
