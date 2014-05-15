@@ -11,16 +11,18 @@
         }
 
         // use jQuery (or a clone) if it's available
-        // look for window.$ since that is the universal jQuery syntax
+        // look for window.$ and window.$.extend since that is the universal jQuery syntax
+        // and all clones should have the extend method
         // could interfere with other libraries using window.$
-        var USING_JQUERY = typeof window.$ !== 'undefined',
+        var USING_JQUERY = typeof window.$ !== 'undefined' && window.$.extend,
 
             QUERY = USING_JQUERY ? window.$ : window.document.querySelectorAll,
 
             // use anonymous function to determine how to test the style
             IS_HIDDEN = ( function ()
                 {
-                    if ( USING_JQUERY )
+                    // check for jquery and filter method
+                    if ( USING_JQUERY && QUERY( 'scout' ).filter )
                     {
                         // using jQuery, test with .filter()
                         return function ( elem )
