@@ -147,7 +147,7 @@
 
             get: function ( selector, fn )
             {
-                var trigger = null
+                var trigger = false
 
                 if ( this.cache.hasOwnProperty( selector ) && this[ this.cache[ selector ] ] )
                 {
