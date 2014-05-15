@@ -109,7 +109,7 @@
                 this[ i ] = trigger
 
                 // add index to cache - no need for a full rebuild
-                this.cache[ selector ] = newLen
+                this.cache[ selector ] = i
 
                 // run an initial check on this trigger - should be optional
                 trigger.check()
