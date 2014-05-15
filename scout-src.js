@@ -103,10 +103,10 @@
                 var trigger = new Trigger( selector, fn ),
 
                     // if selector is cached, grab the existing index
-                    newLen = this.cache[ selector ] ? this.cache[ selector ] : this.length++
+                    i = this.cache[ selector ] ? this.cache[ selector ] : this.length++
 
                 // save the trigger
-                this[ newLen ] = trigger
+                this[ i ] = trigger
 
                 // add index to cache - no need for a full rebuild
                 this.cache[ selector ] = newLen
