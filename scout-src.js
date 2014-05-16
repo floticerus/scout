@@ -7,7 +7,13 @@
         if ( !window )
         {
             // window is not set - trying to run in nodejs or something? hmmm
-            return
+            return console.error( 'scout: window object was not found' )
+        }
+        
+        if ( !window.document.querySelectorAll )
+        {
+            // querySelectorAll is required for scout to function
+            return console.error( 'scout: window.querySelectorAll was not found' )
         }
 
         // use anonymous function to determine how to test element styles
@@ -240,4 +246,4 @@
 
         window.scout = new Scout()
     }
-)( window );
+)( this.window );
