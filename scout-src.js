@@ -18,25 +18,7 @@
             return console.log( 'scout: fatal! window.querySelectorAll was not found' )
         }
 
-        var QUERIES = {
-                'qsa': doc.querySelectorAll.bind( doc ),
-
-                'id': function ( selector )
-                {
-                    var result = doc.getElementById( selector.replace( QUERY_REGEXES.id, '' ) )
-
-                    return result ? [ result ] : []
-                },
-
-                'cls': function ( selector )
-                {
-                    return doc.getElementsByClassName( selector.replace( QUERY_REGEXES.cls, '' ) )
-                },
-
-                'tag': doc.getElementsByTagName.bind( doc )
-            },
-
-            QUERY_REGEXES = {
+        var QUERY_REGEXES = {
                 cls: /^\./,
 
                 id: /^#/,
@@ -44,6 +26,24 @@
                 tag: /^[a-zA-Z]/,
 
                 attr: /^\[/
+            },
+
+            QUERIES = {
+                qsa: doc.querySelectorAll.bind( doc ),
+
+                id: function ( selector )
+                {
+                    var result = doc.getElementById( selector.replace( QUERY_REGEXES.id, '' ) )
+
+                    return result ? [ result ] : []
+                },
+
+                cls: function ( selector )
+                {
+                    return doc.getElementsByClassName( selector.replace( QUERY_REGEXES.cls, '' ) )
+                },
+
+                tag: doc.getElementsByTagName.bind( doc )
             },
 
             QUERY = function ( selector )
