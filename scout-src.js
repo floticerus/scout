@@ -18,56 +18,64 @@
             return console.log( 'scout: fatal! window.querySelectorAll was not found' )
         }
 
-        var QUERY_REGEXES = {
-                cls: /^\./,
-
-                id: /^#/,
-
-                tag: /^[a-zA-Z]/,
-
-                attr: /^\[/
-            },
-
-            QUERIES = {
-                qsa: doc.querySelectorAll.bind( doc ),
-
-                id: function ( selector )
+        var QUERIES = {
+                id:
                 {
-                    var result = doc.getElementById( selector.replace( QUERY_REGEXES.id, '' ) )
+                    regex: /^#/,
 
-                    return result ? [ result ] : []
+                    fn: function ( selector )
+                    {
+                        var result = doc.getElementById( selector.replace( QUERIES.id.regex, '' ) )
+
+                        return result ? [ result ] : []
+                    }
                 },
 
-                cls: function ( selector )
+                cls:
                 {
-                    return doc.getElementsByClassName( selector.replace( QUERY_REGEXES.cls, '' ) )
+                    regex: /^\./,
+
+                    fn: function ( selector )
+                    {
+                        return doc.getElementsByClassName( selector.replace( QUERIES.cls.regex, '' ) )
+                    }
                 },
 
-                tag: doc.getElementsByTagName.bind( doc )
+                tag:
+                {
+                    regex: /^[a-zA-Z]/,
+
+                    fn: doc.getElementsByTagName.bind( doc )
+                },
+
+                qsa:
+                {
+                    regex: null,
+
+                    fn: doc.querySelectorAll.bind( doc )
+                }
             },
 
             QUERY = function ( selector )
             {
-                for ( var key in QUERY_REGEXES )
+                for ( var key in QUERIES )
                 {
-                    var c = QUERY_REGEXES[ key ]
+                    var c = QUERIES[ key ]
 
-                    if ( !c.test( selector ) )
+                    if ( !c.regex || !c.regex.test( selector ) )
                     {
                         // no match found, carry on to next regex
                         continue
                     }
 
                     // match
-                    return QUERIES[ key ]( selector ) || []
+                    return c.fn( selector ) || []
                 }
 
                 // if no match at this point, run querySelectorAll
-                return QUERIES.qsa( selector )
+                return QUERIES.qsa.fn( selector )
             },
 
-        // var QUERY = window.document.querySelectorAll.bind( window.document ),
-        
             // use anonymous function to determine how to test element styles
             IS_HIDDEN = ( function ()
             {
