@@ -202,42 +202,42 @@
                 return trigger
             },
 
-            // check all triggers in this instance
-            checkAll: function ()
-            {
-                for ( var i = 0, l = this.length; i < l; ++i )
-                {
-                    var c = this[ i ],
-
-                        elems = QUERY( c.selector )
-
-                    for ( var i2 = 0, l2 = elems.length; i2 < l2; ++i2 )
-                    {
-                        if ( IS_HIDDEN( elems[ i2 ] ) )
-                        {
-                            continue
-                        }
-
-                        c.fn( elems[ i2 ], i2 )
-                    }
-                }
-
-                return this
-            },
-
-            // check for one trigger
             check: function ( selector )
             {
-                this.get( selector, function ( trigger )
+                if ( typeof selector === 'undefined' )
+                {
+                    // check all triggers
+                    for ( var i = 0, l = this.length; i < l; ++i )
                     {
-                        if ( !trigger )
-                        {
-                            return
-                        }
+                        var c = this[ i ],
 
-                        trigger.check()
+                            elems = QUERY( c.selector )
+
+                        for ( var i2 = 0, l2 = elems.length; i2 < l2; ++i2 )
+                        {
+                            if ( IS_HIDDEN( elems[ i2 ] ) )
+                            {
+                                continue
+                            }
+
+                            c.fn( elems[ i2 ], i2 )
+                        }
                     }
-                )
+                }
+                else
+                {
+                    // check specific trigger
+                    this.get( selector, function ( trigger )
+                        {
+                            if ( !trigger )
+                            {
+                                return
+                            }
+
+                            trigger.check()
+                        }
+                    )
+                }
 
                 return this
             }
