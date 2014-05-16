@@ -8,7 +8,7 @@ for example, let's say you have a basic website using ajax which returns plain h
 > one of the pages could look like this
 >
 > ```html
-> <p data-subscribe="foo">i am a paragraph, i contain some information.</p>
+> <p data-subscribe="foo">i am a paragraph, yet i contain very little information.</p>
 > ```
 
 &nbsp;
