@@ -34,6 +34,7 @@ $( window ).on( 'statechange', function ( e )
 )
 ```
 
+in order for the trigger to fire, the element must be visible. i.e. the elements `display` style must not be set to `none`. if `visibility` is set to `hidden`, or `opacity` to `0`, the trigger will still fire.
 
 chainable for your convenience
 
@@ -41,5 +42,5 @@ chainable for your convenience
 scout
     .on( '.foo', doClass )
     .on( '[data-bar]', doAttribute )
-    .once( '.once', doOnce )
+    .once( '#once', doIdOnce )
 ```
