@@ -25,8 +25,10 @@ for example, let's say you have a basic website using ajax which returns plain h
 >     }
 > )
 > ```
+> 
+> when a new trigger is added, it will automatically check the page one time.
 
-when a new trigger is added, it will automatically check the page one time.
+&nbsp;
 
 > to manually check triggers, you have to tell scout when to look. for example, in an ajax or statechange handler.
 > ```javascript
