@@ -1,4 +1,4 @@
-/** @preserve  scout v0.0.1
+/** @preserve  scout v0.0.2
  *  copyright 2014 - kevin von flotow
  *  MIT license
  */
