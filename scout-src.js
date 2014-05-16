@@ -82,24 +82,28 @@
                 if ( window.getComputedStyle )
                 {
                     // window.getComputedStyle is available
-                    return function getComputedStyleLoop( elem )
+                    return function ( elem )
                     {
-                        var styles = window.getComputedStyle( elem, null )
+                        var styles = window.getComputedStyle( elem, null ),
 
-                        if ( !styles || styles.display !== 'none' )
+                            ret = true
+
+                        while ( ret === true && ( !styles || styles.display !== 'none' ) )
                         {
                             if ( elem && elem.parentNode )
                             {
-                                return getComputedStyleLoop( elem.parentNode )
+                                elem = elem.parentNode
+
+                                styles = window.getComputedStyle( elem, null )
                             }
                             else
                             {
-                                return false
+                                ret = false
                             }
                         }
 
                         // styles.display should equal 'none' at this point
-                        return true
+                        return ret
                     }
                 }
                 else
@@ -316,7 +320,7 @@
                 }
 
                 return this
-                
+
             }
         }
 
