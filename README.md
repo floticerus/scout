@@ -50,3 +50,9 @@ in order for the trigger to fire, the element must be visible. i.e. the elements
 >     .on( '[data-bar]', doAttribute )
 >     .once( '#once', doIdOnce )
 > ```
+
+license
+----
+The MIT License (MIT)
+
+Copyright (c) 2014 kevin von flotow
