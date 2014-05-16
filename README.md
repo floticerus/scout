@@ -8,7 +8,7 @@ for example, let's say you have a basic website using ajax which returns plain h
 > one of the pages could look like this
 >
 > ```html
-> <p class="foo">i am a paragraph, i contain some information.</p>
+> <p data-subscribe="foo">i am a paragraph, i contain some information.</p>
 > ```
 
 &nbsp;
@@ -16,16 +16,19 @@ for example, let's say you have a basic website using ajax which returns plain h
 > to setup a trigger with scout, you could do
 >
 > ```javascript
-> scout.on( '.foo', function ( element, index )
+> scout.on( '[data-foo]', function ( element, index )
 >     {
->         element.innerHTML = 'updated html'
+>         // let's pretend the subscribe function subscribes the client to a websocket channel
+>         subscribe( element.getAttribute( 'data-subscribe' ) )
+> 
+>         // client has subscribed to channel 'foo'
 >     }
 > )
 > ```
 
-&nbsp;
+when a new trigger is added, it will automatically check the page one time.
 
-> to check triggers, you have to tell scout when to look. for example, in an ajax or statechange handler.
+> to manually check triggers, you have to tell scout when to look. for example, in an ajax or statechange handler.
 > ```javascript
 > $( window ).on( 'statechange', function ( e )
 >     {
