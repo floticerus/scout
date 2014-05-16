@@ -40,20 +40,20 @@ for example, let's say you have a basic website using ajax which returns plain h
 >         {
 >             // ... do some stuff ...
 > 
+>             // passing no arguments checks all of the triggers
 >             scout.check()
+> 
+>             // passing a string will check for specific selectors that have already been defined
+>             scout.check( '.foo' )
 >         }
 >     }
 > )
 >
 > $( window ).on( 'statechange', function ( e )
 >     {
->         // ... do some stuff ...
-> 
->         // passing no arguments checks all of the triggers
+>         // ... do some stuff ... 
+>         
 >         scout.check()
-> 
->         // passing a string will check for specific selectors that have already been defined
->         scout.check( '.foo' )
 >     }
 > )
 > ```
