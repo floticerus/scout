@@ -287,7 +287,7 @@
                 if ( typeof selector === 'undefined' )
                 {
                     // check all triggers
-                    this.each( function ( trigger, index )
+                    this.each( function ( trigger )
                         {
                             trigger.check()
                         }

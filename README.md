@@ -16,7 +16,7 @@ for example, let's say you have a basic website using ajax which returns plain h
 > to setup a trigger with scout, you could do
 >
 > ```javascript
-> scout.on( '[data-foo]', function ( element, index )
+> scout.on( '[data-subscribe]', function ( element, index )
 >     {
 >         // let's pretend the subscribe function subscribes the client to a websocket channel
 >         subscribe( element.getAttribute( 'data-subscribe' ) )
