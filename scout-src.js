@@ -102,7 +102,6 @@
                             }
                         }
 
-                        // styles.display should equal 'none' at this point
                         return ret
                     }
                 }
