@@ -15,7 +15,7 @@
         if ( !doc.querySelectorAll )
         {
             // querySelectorAll is required for scout to function
-            return console.log( 'scout: fatal! window.querySelectorAll was not found' )
+            console.log( 'scout: window.querySelectorAll was not found, could cause issues depending on usage' )
         }
 
         var QUERIES = {
@@ -82,9 +82,24 @@
                 if ( window.getComputedStyle )
                 {
                     // window.getComputedStyle is available
-                    return function ( elem )
+                    return function getComputedStyleLoop( elem )
                     {
-                        return window.getComputedStyle( elem, null ).display === 'none'
+                        var styles = window.getComputedStyle( elem, null )
+
+                        if ( !styles || styles.display !== 'none' )
+                        {
+                            if ( elem && elem.parentNode )
+                            {
+                                return getComputedStyleLoop( elem.parentNode )
+                            }
+                            else
+                            {
+                                return false
+                            }
+                        }
+
+                        // styles.display should equal 'none' at this point
+                        return true
                     }
                 }
                 else
@@ -301,6 +316,7 @@
                 }
 
                 return this
+                
             }
         }
 

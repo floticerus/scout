@@ -25,6 +25,8 @@ to check triggers, you have to tell scout when to look. for example, in an ajax 
 ```javascript
 $( window ).on( 'statechange', function ( e )
     {
+        // ... do some stuff ...
+
         // passing no arguments checks all of the triggers
         scout.check()
 
