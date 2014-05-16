@@ -17,7 +17,9 @@
         }
 
         // use anonymous function to determine how to test element styles
-        var IS_HIDDEN = ( function ()
+        var QUERY = window.document.querySelectorAll.bind( window.document ),
+        
+            IS_HIDDEN = ( function ()
             {
                 if ( window.getComputedStyle )
                 {
@@ -54,7 +56,7 @@
             // check this trigger
             check: function ()
             {
-                var elems = window.document.querySelectorAll( this.selector )
+                var elems = QUERY( this.selector )
 
                 for ( var i = 0, l = elems.length; i < l; ++i )
                 {
@@ -211,7 +213,7 @@
                     // check all triggers
                     this.each( function ( trigger, index )
                         {
-                            var elems = window.document.querySelectorAll( trigger.selector )
+                            var elems = QUERY( trigger.selector )
 
                             for ( var i = 0, l = elems.length; i < l; ++i )
                             {
