@@ -289,17 +289,7 @@
                     // check all triggers
                     this.each( function ( trigger, index )
                         {
-                            var elems = QUERY( trigger.selector )
-
-                            for ( var i = 0, l = elems.length; i < l; ++i )
-                            {
-                                if ( IS_HIDDEN( elems[ i ] ) )
-                                {
-                                    continue
-                                }
-
-                                trigger.fn( elems[ i ], i )
-                            }
+                            trigger.check()
                         }
                     )
                 }
