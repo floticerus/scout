@@ -22,7 +22,7 @@ scout.on( '.foo', function ( element, index )
 ```
 
 to check triggers, you have to tell scout when to look. for example, in an ajax or statechange handler.
-```
+```javascript
 $( window ).on( 'statechange', function ( e )
     {
         // passing no arguments checks all of the triggers
