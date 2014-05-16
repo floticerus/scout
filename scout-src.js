@@ -12,29 +12,29 @@
 
         // use anonymous function to determine how to test element styles
         var IS_HIDDEN = ( function ()
+            {
+                if ( window.getComputedStyle )
                 {
-                    if ( window.getComputedStyle )
+                    // window.getComputedStyle is available
+                    return function ( elem )
                     {
-                        // window.getComputedStyle is available
-                        return function ( elem )
-                        {
-                            return window.getComputedStyle( elem, null ).display === 'none'
-                        }
-                    }
-                    else
-                    {
-                        // window.getComputedStyle is not available
-                        console.log( 'scout: window.getComputedStyle is not available, could cause issues depending on usage' )
-                        
-                        // assume the element is visible
-                        // definitely unwanted but i'm not aware of a simple workaround
-                        return function ()
-                        {
-                            return false
-                        }
+                        return window.getComputedStyle( elem, null ).display === 'none'
                     }
                 }
-            )()
+                else
+                {
+                    // window.getComputedStyle is not available
+                    console.log( 'scout: window.getComputedStyle is not available, could cause issues depending on usage' )
+                    
+                    // assume the element is visible
+                    // definitely unwanted but i'm not aware of a simple workaround
+                    return function ()
+                    {
+                        return false
+                    }
+                }
+            }
+        )()
 
         /** @constructor */
         function ScoutTrigger( selector, fn )
@@ -63,9 +63,9 @@
         }
 
         /** @constructor */
-        function ScoutCache( scoutObject )
+        function ScoutCache( scoutTrigger )
         {
-            this.creator = scoutObject
+            this.creator = scoutTrigger
 
             this.data = {}
         }
@@ -76,11 +76,14 @@
                 // reset the cache
                 this.data = {}
 
+                var that = this
+
                 // build a new cache
-                for ( var i = 0, l = this.creator.length; i < l; ++i )
-                {
-                    this.data[ this.creator[ i ].selector ] = i
-                }
+                that.creator.each( function ( trigger, index )
+                    {
+                        that.data[ trigger.selector ] = index
+                    }
+                )
 
                 return this
             },
@@ -114,6 +117,16 @@
         }
 
         Scout.prototype = {
+            each: function ( fn )
+            {
+                for ( var i = 0, l = this.length; i < l; ++i )
+                {
+                    fn( this[ i ], i )
+                }
+
+                return this
+            },
+
             on: function ( selector, fn )
             {
                 var trigger = new ScoutTrigger( selector, fn ),
@@ -190,22 +203,21 @@
                 if ( typeof selector === 'undefined' )
                 {
                     // check all triggers
-                    for ( var i = 0, l = this.length; i < l; ++i )
-                    {
-                        var c = this[ i ],
-
-                            elems = window.document.querySelectorAll( c.selector )
-
-                        for ( var i2 = 0, l2 = elems.length; i2 < l2; ++i2 )
+                    this.each( function ( trigger, index )
                         {
-                            if ( IS_HIDDEN( elems[ i2 ] ) )
-                            {
-                                continue
-                            }
+                            var elems = window.document.querySelectorAll( trigger.selector )
 
-                            c.fn( elems[ i2 ], i2 )
+                            for ( var i = 0, l = elems.length; i < l; ++i )
+                            {
+                                if ( IS_HIDDEN( elems[ i ] ) )
+                                {
+                                    continue
+                                }
+
+                                trigger.fn( elems[ i ], i )
+                            }
                         }
-                    }
+                    )
                 }
                 else
                 {
