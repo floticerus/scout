@@ -1,5 +1,5 @@
 /*
-  scout v0.0.2
+  scout v0.0.3
   copyright 2014 - kevin von flotow
   MIT license
 */
