@@ -9,16 +9,66 @@
             // window is not set - trying to run in nodejs or something? hmmm
             return console.log( 'scout: fatal! window object was not found' )
         }
+
+        var doc = window.document
         
-        if ( !window.document.querySelectorAll )
+        if ( !doc.querySelectorAll )
         {
             // querySelectorAll is required for scout to function
             return console.log( 'scout: fatal! window.querySelectorAll was not found' )
         }
 
-        // use anonymous function to determine how to test element styles
-        var QUERY = window.document.querySelectorAll.bind( window.document ),
+        var QUERIES = {
+                'qsa': doc.querySelectorAll.bind( doc ),
+
+                'id': function ( selector )
+                {
+                    var result = doc.getElementById( selector.replace( QUERY_REGEXES.id, '' ) )
+
+                    return result ? [ result ] : []
+                },
+
+                'cls': function ( selector )
+                {
+                    return doc.getElementsByClassName( selector.replace( QUERY_REGEXES.cls, '' ) )
+                },
+
+                'tag': doc.getElementsByTagName.bind( doc )
+            },
+
+            QUERY_REGEXES = {
+                cls: /^\./,
+
+                id: /^#/,
+
+                tag: /^[a-zA-Z]/,
+
+                attr: /^\[/
+            },
+
+            QUERY = function ( selector )
+            {
+                for ( var key in QUERY_REGEXES )
+                {
+                    var c = QUERY_REGEXES[ key ]
+
+                    if ( !c.test( selector ) )
+                    {
+                        // no match found, carry on to next regex
+                        continue
+                    }
+
+                    // match
+                    return QUERIES[ key ]( selector ) || []
+                }
+
+                // if no match at this point, run querySelectorAll
+                return QUERIES.qsa( selector )
+            },
+
+        // var QUERY = window.document.querySelectorAll.bind( window.document ),
         
+            // use anonymous function to determine how to test element styles
             IS_HIDDEN = ( function ()
             {
                 if ( window.getComputedStyle )
