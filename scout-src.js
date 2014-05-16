@@ -10,29 +10,12 @@
             return
         }
 
-        // use jQuery (or a clone) if it's available
-        // look for window.$ and window.$.extend since that is the universal jQuery syntax
-        // and all clones should have the extend method
-        // could interfere with other libraries using window.$
-        var USING_JQUERY = typeof window.$ !== 'undefined' && window.$.extend,
-
-            QUERY = USING_JQUERY ? window.$ : window.document.querySelectorAll,
-
-            // use anonymous function to determine how to test element styles
-            IS_HIDDEN = ( function ()
+        // use anonymous function to determine how to test element styles
+        var IS_HIDDEN = ( function ()
                 {
-                    // check for jquery and filter method
-                    if ( USING_JQUERY && QUERY( 'scout' ).filter )
+                    if ( window.getComputedStyle )
                     {
-                        // using jQuery, test with .filter()
-                        return function ( elem )
-                        {
-                            return QUERY( elem ).filter( ':hidden' ).length !== 0
-                        }
-                    }
-                    else if ( window.getComputedStyle )
-                    {
-                        // no jQuery, window.getComputedStyle is available
+                        // window.getComputedStyle is available
                         return function ( elem )
                         {
                             return window.getComputedStyle( elem, null ).display === 'none'
@@ -40,8 +23,8 @@
                     }
                     else
                     {
-                        // no jQuery and window.getComputedStyle is not available
-                        console.log( 'scout: unable to find compatible library (such as jQuery) or window.getComputedStyle, could cause issues depending on usage' )
+                        // window.getComputedStyle is not available
+                        console.log( 'scout: window.getComputedStyle is not available, could cause issues depending on usage' )
                         
                         // assume the element is visible
                         // definitely unwanted but i'm not aware of a simple workaround
@@ -54,18 +37,18 @@
             )()
 
         /** @constructor */
-        function Trigger( selector, fn )
+        function ScoutTrigger( selector, fn )
         {
             this.selector = selector
 
             this.fn = fn
         }
 
-        Trigger.prototype = {
+        ScoutTrigger.prototype = {
             // check this trigger
             check: function ()
             {
-                var elems = QUERY( this.selector )
+                var elems = window.document.querySelectorAll( this.selector )
 
                 for ( var i = 0, l = elems.length; i < l; ++i )
                 {
@@ -133,7 +116,7 @@
         Scout.prototype = {
             on: function ( selector, fn )
             {
-                var trigger = new Trigger( selector, fn ),
+                var trigger = new ScoutTrigger( selector, fn ),
                     
                     // check for existing index
                     c = this.cache.get( selector ),
@@ -211,7 +194,7 @@
                     {
                         var c = this[ i ],
 
-                            elems = QUERY( c.selector )
+                            elems = window.document.querySelectorAll( c.selector )
 
                         for ( var i2 = 0, l2 = elems.length; i2 < l2; ++i2 )
                         {
