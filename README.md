@@ -32,20 +32,15 @@ for example, let's say you have a basic website using ajax which returns plain h
 
 > to manually check triggers, you have to tell scout when to look. for example, in an ajax or statechange handler.
 > ```javascript
-> $.ajax(
+> $( 'div' ).load( 'ajax.html', function ( data )
 >     {
->         url: 'ajax.html',
+>         // ... do some stuff ...
 > 
->         success: function ( data )
->         {
->             // ... do some stuff ...
+>         // passing no arguments checks all of the triggers
+>         scout.check()
 > 
->             // passing no arguments checks all of the triggers
->             scout.check()
-> 
->             // passing a string will check for specific selectors that have already been defined
->             scout.check( '.foo' )
->         }
+>         // passing a string will check for specific selectors that have already been defined
+>         scout.check( '.foo' )
 >     }
 > )
 >
