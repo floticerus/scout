@@ -1,4 +1,4 @@
-/** @preserve  scout v0.0.3
+/** @preserve  scout v0.0.4
  *  copyright 2014 - kevin von flotow
  *  MIT license
  */
@@ -94,7 +94,16 @@
                             {
                                 elem = elem.parentNode
 
-                                styles = window.getComputedStyle( elem, null )
+                                // firefox will throw an error on the top level element,
+                                // so check that parentNode exists
+                                if ( elem.parentNode )
+                                {
+                                    styles = window.getComputedStyle( elem, null )
+                                }
+                                else
+                                {
+                                    styles = null
+                                }
                             }
                             else
                             {
