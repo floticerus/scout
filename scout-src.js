@@ -1,4 +1,4 @@
-/** @preserve  scout v0.0.4
+/** @preserve  scout v0.0.5
  *  copyright 2014 - kevin von flotow
  *  MIT license
  */
@@ -21,11 +21,11 @@
         var QUERIES = {
                 id:
                 {
-                    regex: /^#/,
+                    regex: /^#[-A-Za-z0-9_][-A-Za-z0-9_:.]*$/,
 
                     fn: function ( selector )
                     {
-                        var result = doc.getElementById( selector.replace( QUERIES.id.regex, '' ) )
+                        var result = doc.getElementById( selector.substr( 1 ) )
 
                         return result ? [ result ] : []
                     }
@@ -33,17 +33,17 @@
 
                 cls:
                 {
-                    regex: /^\./,
+                    regex: /^\.[-A-Za-z0-9_:.]*$/,
 
                     fn: function ( selector )
                     {
-                        return doc.getElementsByClassName( selector.replace( QUERIES.cls.regex, '' ) )
+                        return doc.getElementsByClassName( selector.substr( 1 ) )
                     }
                 },
 
                 tag:
                 {
-                    regex: /^[a-zA-Z]/,
+                    regex: /^[A-Za-z][-A-Za-z0-9_:.]*$/,
 
                     fn: doc.getElementsByTagName.bind( doc )
                 },
