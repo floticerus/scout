@@ -18,6 +18,9 @@
             console.log( 'scout: window.querySelectorAll was not found, could cause issues depending on usage' )
         }
 
+        // add other compatible libraries as needed
+        var jq = window.jQuery || window.jqMobi || window.Zepto || window.af
+
         var QUERIES = {
                 id:
                 {
@@ -56,29 +59,20 @@
                 }
             },
 
-            QUERY = function ( selector )
-            {
-                for ( var key in QUERIES )
-                {
-                    var c = QUERIES[ key ]
-
-                    if ( !c.regex || !c.regex.test( selector ) )
-                    {
-                        // no match found, carry on to next regex
-                        continue
-                    }
-
-                    // match
-                    return c.fn( selector ) || []
-                }
-
-                // if no match at this point, run querySelectorAll
-                return QUERIES.qsa.fn( selector )
-            },
-
             // use anonymous function to determine how to test element styles
             IS_HIDDEN = ( function ()
             {
+                // use jquery if it's available
+                /* if ( jq )
+                {
+                    return function ( elem )
+                    {
+                        // why is this backwards
+                        return $( elem ).is( ':visible' )
+                    }
+                } */
+
+                // use native javascript
                 if ( window.getComputedStyle )
                 {
                     // window.getComputedStyle is available
@@ -114,44 +108,78 @@
                         return ret
                     }
                 }
-                else
-                {
-                    // window.getComputedStyle is not available
-                    console.log( 'scout: window.getComputedStyle is not available, could cause issues depending on usage' )
+                
+                // window.getComputedStyle is not available
+                console.log( 'scout: window.getComputedStyle is not available, could cause issues depending on usage' )
                     
-                    // assume the element is visible
-                    // definitely unwanted but i'm not aware of a simple workaround
-                    return function ()
-                    {
-                        return false
-                    }
+                // assume the element is visible
+                // definitely unwanted but i'm not aware of a simple workaround
+                return function ()
+                {
+                    return false
                 }
             }
         )()
+
+        function SET_QUERY()
+        {
+            // is jquery or similar available?
+            if ( jq )
+            {
+                // return jquery object as selector function
+                return jq
+            }
+
+            // jquery not available, use native javascript
+            for ( var key in QUERIES )
+            {
+                var c = QUERIES[ key ]
+
+                if ( !c.regex || !c.regex.test( this.selector ) )
+                {
+                    // no match found, carry on to next regex
+                    continue
+                }
+
+                // match, return it
+                return c.fn
+            }
+
+            // no match yet, so return querySelectorAll
+            return QUERIES.qsa.fn
+        }
 
         /** @constructor */
         function ScoutTrigger( selector, fn )
         {
             this.selector = selector
 
+            // set the query once instead of checking every time
+            this.queryFn = SET_QUERY.call( this )
+
             this.fn = fn
         }
 
-        ScoutTrigger.prototype = {
-            // check this trigger
-            check: function ()
+        // check this trigger
+        ScoutTrigger.prototype.check = function ()
+        {
+            if ( !this.queryFn )
             {
-                var elems = QUERY( this.selector )
+                return
+            }
 
-                for ( var i = 0, l = elems.length; i < l; ++i )
+            // call the query selector
+            var elems = this.queryFn( this.selector )
+
+            // look for elements
+            for ( var i = 0, l = elems.length; i < l; ++i )
+            {
+                if ( IS_HIDDEN( elems[ i ] ) )
                 {
-                    if ( IS_HIDDEN( elems[ i ] ) )
-                    {
-                        continue
-                    }
-
-                    this.fn( elems[ i ], i )
+                    continue
                 }
+
+                this.fn( elems[ i ], i )
             }
         }
 
@@ -163,39 +191,37 @@
             this.data = {}
         }
 
-        ScoutCache.prototype = {
-            update: function ()
-            {
-                // reset the cache
-                this.data = {}
+        ScoutCache.prototype.update = function ()
+        {
+            // reset the cache
+            this.data = {}
 
-                var that = this
+            var that = this
 
-                // build a new cache
-                that.creator.each( function ( trigger, index )
-                    {
-                        that.data[ trigger.selector ] = index
-                    }
-                )
+            // build a new cache
+            that.creator.each( function ( trigger, index )
+                {
+                    that.data[ trigger.selector ] = index
+                }
+            )
 
-                return this
-            },
+            return this
+        }
 
-            add: function ( selector, index )
-            {
-                this.data[ selector ] = index
-            },
+        ScoutCache.prototype.add = function ( selector, index )
+        {
+            this.data[ selector ] = index
+        }
 
-            has: function ( selector )
-            {
-                return typeof selector !== 'undefined' && this.data.hasOwnProperty( selector )
-            },
+        ScoutCache.prototype.has = function ( selector )
+        {
+            return typeof selector !== 'undefined' && this.data.hasOwnProperty( selector )
+        }
 
-            // returns index or -1
-            get: function ( selector )
-            {
-                return this.has( selector ) ? this.data[ selector ] : -1
-            }
+        // like indexOf, returns index or -1
+        ScoutCache.prototype.get = function ( selector )
+        {
+            return this.has( selector ) ? this.data[ selector ] : -1
         }
 
         /** @constructor */
@@ -209,117 +235,115 @@
             this.cache = new ScoutCache( this )
         }
 
-        Scout.prototype = {
-            each: function ( fn )
+        Scout.prototype.each = function ( fn )
+        {
+            for ( var i = 0, l = this.length; i < l; ++i )
             {
-                for ( var i = 0, l = this.length; i < l; ++i )
-                {
-                    fn( this[ i ], i )
-                }
+                fn( this[ i ], i )
+            }
 
-                return this
-            },
+            return this
+        }
 
-            on: function ( selector, fn )
-            {
-                var trigger = new ScoutTrigger( selector, fn ),
+        Scout.prototype.on = function ( selector, fn )
+        {
+            var trigger = new ScoutTrigger( selector, fn ),
                     
-                    // check for existing index
-                    c = this.cache.get( selector ),
+                // check for existing index
+                c = this.cache.get( selector ),
 
-                    // if index exists, use it, otherwise generate a new one
-                    i = c > -1 ? c : this.length++
+                // if index exists, use it, otherwise generate a new one
+                i = c > -1 ? c : this.length++
 
-                // save the trigger
-                this[ i ] = trigger
+            // save the trigger
+            this[ i ] = trigger
 
-                // add index to cache - no need for a full rebuild
-                this.cache.add( selector, i )
+            // add index to cache - no need for a full rebuild
+            this.cache.add( selector, i )
 
-                // run an initial check on this trigger - should be optional
-                trigger.check()
+            // run an initial check on this trigger - should be optional
+            trigger.check()
 
-                return this
-            },
+            return this
+        }
 
-            once: function ( selector, fn )
+        Scout.prototype.once = function ( selector, fn )
+        {
+            var that = this
+
+            that.on( selector, function ( element, index )
+                {
+                    that.off( selector )
+
+                    fn( element, index )
+                }
+            )
+
+            return this
+        }
+
+        Scout.prototype.off = function ( selector )
+        {
+            var cached = this.cache.get( selector )
+
+            if ( cached > -1 )
             {
-                var that = this
+                // hopefully this works without issues
+                Array.prototype.splice.apply( this, [ cached, 1 ] )
 
-                that.on( selector, function ( element, index )
+                this.cache.update()
+            }
+
+            return this
+        }
+
+        Scout.prototype.get = function ( selector, fn )
+        {
+            var trigger = false,
+
+                cached = this.cache.get( selector )
+
+            if ( cached > -1 )
+            {
+                trigger = this[ cached ]
+            }
+
+            if ( fn )
+            {
+                fn( trigger )
+            }
+
+            return trigger
+        }
+
+        Scout.prototype.check = function ( selector )
+        {
+            if ( typeof selector === 'undefined' )
+            {
+                // check all triggers
+                this.each( function ( trigger )
                     {
-                        that.off( selector )
-
-                        fn( element, index )
+                        trigger.check()
                     }
                 )
-
-                return this
-            },
-
-            off: function ( selector )
-            {
-                var cached = this.cache.get( selector )
-
-                if ( cached > -1 )
-                {
-                    // hopefully this works without issues
-                    Array.prototype.splice.apply( this, [ cached, 1 ] )
-
-                    this.cache.update()
-                }
-
-                return this
-            },
-
-            get: function ( selector, fn )
-            {
-                var trigger = false,
-
-                    cached = this.cache.get( selector )
-
-                if ( cached > -1 )
-                {
-                    trigger = this[ cached ]
-                }
-
-                if ( fn )
-                {
-                    fn( trigger )
-                }
-
-                return trigger
-            },
-
-            check: function ( selector )
-            {
-                if ( typeof selector === 'undefined' )
-                {
-                    // check all triggers
-                    this.each( function ( trigger )
-                        {
-                            trigger.check()
-                        }
-                    )
-                }
-                else
-                {
-                    // check specific trigger
-                    this.get( selector, function ( trigger )
-                        {
-                            if ( !trigger )
-                            {
-                                return
-                            }
-
-                            trigger.check()
-                        }
-                    )
-                }
-
-                return this
-
             }
+            
+            else
+            {
+                // check specific trigger
+                this.get( selector, function ( trigger )
+                    {
+                        if ( !trigger )
+                        {
+                            return
+                        }
+
+                        trigger.check()
+                    }
+                )
+            }
+
+            return this
         }
 
         window.scout = new Scout()
