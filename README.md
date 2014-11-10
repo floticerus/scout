@@ -1,7 +1,9 @@
 scout
 =====
 
-this was developed because i needed (wanted) a simple way to fire javascript through incoming html, without any extra requests. it requires a modern browser with querySelectorAll and getComputedStyle ( chrome, ff 3.5+, opera 10+, ie 9+, safari 3.2+ ).
+this was developed because i needed (wanted) a simple way to fire javascript through incoming html, without any extra requests. it should run fine on any modern browser ( chrome, ff 3.5+, opera 10+, ie 9+, safari 3.2+ ).
+
+now compatible with (but does not require) jquery, zepto, and jqmobi/intel app framework. others will be added as needed. testing for window.$ is avoided because it could break things. if a compatible library is detected, scout will use the selector engine built in to it, which enables pseudo selectors not available to native javascript. 
 
 for example, let's say you have a basic website using ajax which returns plain html from a server.
 
