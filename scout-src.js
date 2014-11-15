@@ -346,6 +346,22 @@
             return this
         }
 
-        window.scout = new Scout()
+        var s = new Scout()
+
+        if ( requirejs && typeof define !== 'undefined' )
+        {
+            define( function ()
+                {
+                    return s
+                }
+            )
+        }
+
+        else
+
+        if ( typeof window !== 'undefined' )
+        {
+            window.scout = s
+        }
     }
 )( this.window );
