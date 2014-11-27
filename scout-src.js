@@ -1,4 +1,4 @@
-/** @preserve  scout v0.0.5
+/** @preserve  scout v0.0.6
  *  copyright 2014 - kevin von flotow
  *  MIT license
  */
@@ -22,104 +22,42 @@
         var jq = window.jQuery || window.jqMobi || window.Zepto || window.af
 
         var QUERIES = {
-                id:
+            id:
+            {
+                regex: /^#[-A-Za-z0-9_][-A-Za-z0-9_:.]*$/,
+
+                fn: function ( selector )
                 {
-                    regex: /^#[-A-Za-z0-9_][-A-Za-z0-9_:.]*$/,
+                    var result = doc.getElementById( selector.substr( 1 ) )
 
-                    fn: function ( selector )
-                    {
-                        var result = doc.getElementById( selector.substr( 1 ) )
-
-                        return result ? [ result ] : []
-                    }
-                },
-
-                cls:
-                {
-                    regex: /^\.[-A-Za-z0-9_:.]*$/,
-
-                    fn: function ( selector )
-                    {
-                        return doc.getElementsByClassName( selector.substr( 1 ) )
-                    }
-                },
-
-                tag:
-                {
-                    regex: /^[A-Za-z][-A-Za-z0-9_:.]*$/,
-
-                    fn: doc.getElementsByTagName.bind( doc )
-                },
-
-                qsa:
-                {
-                    regex: null,
-
-                    fn: doc.querySelectorAll.bind( doc )
+                    return result ? [ result ] : []
                 }
             },
 
-            // use anonymous function to determine how to test element styles
-            IS_HIDDEN = ( function ()
+            cls:
             {
-                // use jquery if it's available
-                /* if ( jq )
+                regex: /^\.[-A-Za-z0-9_:.]*$/,
+
+                fn: function ( selector )
                 {
-                    return function ( elem )
-                    {
-                        // why is this backwards
-                        return $( elem ).is( ':visible' )
-                    }
-                } */
-
-                // use native javascript
-                if ( window.getComputedStyle )
-                {
-                    // window.getComputedStyle is available
-                    return function ( elem )
-                    {
-                        var styles = window.getComputedStyle( elem, null ),
-
-                            ret = true
-
-                        while ( ret === true && ( !styles || styles.display !== 'none' ) )
-                        {
-                            if ( elem && elem.parentNode )
-                            {
-                                elem = elem.parentNode
-
-                                // firefox will throw an error on the top level element,
-                                // so check that parentNode exists
-                                if ( elem.parentNode )
-                                {
-                                    styles = window.getComputedStyle( elem, null )
-                                }
-                                else
-                                {
-                                    styles = null
-                                }
-                            }
-                            else
-                            {
-                                ret = false
-                            }
-                        }
-
-                        return ret
-                    }
+                    return doc.getElementsByClassName( selector.substr( 1 ) )
                 }
-                
-                // window.getComputedStyle is not available
-                console.log( 'scout: window.getComputedStyle is not available, could cause issues depending on usage' )
-                    
-                // assume the element is visible
-                // definitely unwanted but i'm not aware of a simple workaround
-                return function ()
-                {
-                    return false
-                }
+            },
+
+            tag:
+            {
+                regex: /^[A-Za-z][-A-Za-z0-9_:.]*$/,
+
+                fn: doc.getElementsByTagName.bind( doc )
+            },
+
+            qsa:
+            {
+                regex: null,
+
+                fn: doc.querySelectorAll.bind( doc )
             }
-        )()
+        }
 
         function SET_QUERY()
         {
@@ -174,11 +112,6 @@
             // look for elements
             for ( var i = 0, l = elems.length; i < l; ++i )
             {
-                if ( IS_HIDDEN( elems[ i ] ) )
-                {
-                    continue
-                }
-
                 this.fn( elems[ i ], i )
             }
         }
@@ -348,7 +281,14 @@
 
         var s = new Scout()
 
-        if ( requirejs && typeof define !== 'undefined' )
+        if ( typeof module !== 'undefined' )
+        {
+            module.exports = s
+        }
+
+        else
+
+        if ( typeof requirejs !== 'undefined' )
         {
             define( function ()
                 {
@@ -358,10 +298,8 @@
         }
 
         else
-
-        if ( typeof window !== 'undefined' )
         {
             window.scout = s
         }
     }
-)( this.window );
+)( window );
