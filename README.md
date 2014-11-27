@@ -55,10 +55,7 @@ for example, let's say you have a basic website using ajax which returns plain h
 > )
 > ```
 
-in order for the trigger to fire, the element must be visible. i.e. the elements `display` style must not be set to `none`. if `visibility` is set to `hidden`, or `opacity` to `0`, the trigger will still fire. NOTE: this will probably be removed, or become optional.
-
-> chainable for your convenience
-> 
+chainable for your convenience
 > ```javascript
 > scout
 >     .on( '.foo', doClass )
